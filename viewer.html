@@ -30,7 +30,8 @@
 			// 4.get location of uniforms and attributes
 			gl.useProgram(shaderProg);
 			var aPositionLoc=gl.getAttribLocation(shaderProg,'a_position'),
-			uPointSizeLoc=gl.getUniformLocation(shaderProg,'uPointSize');
+			uPointSizeLoc=gl.getUniformLocation(shaderProg,'uPointSize'),
+			color=gl.getUniformLocation(shaderProg,'color');
 			gl.useProgram(null);
 
 			// 5. set up data buffers
@@ -49,12 +50,17 @@
 			// point shader to currently binded buffer to store attribute value
 			gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
 			gl.enableVertexAttribArray(aPositionLoc);
-			gl.vertexAttribPointer(aPositionLoc,3,gl.FLOAT,false,0,0);			
+			gl.vertexAttribPointer(aPositionLoc,3,gl.FLOAT,false,0,0);	
+			gl.enableVertexAttribArray(0);
 			gl.bindBuffer(gl.ARRAY_BUFFER,null);
 			//now it is pointing so we unbind it
+			// window.requestAnimationFrame(function(){
 
+			// })
+			gl.uniform3f(color,Math.random(),Math.random(),Math.random());
 			//draw stuff
 			gl.drawArrays(gl.POINTS,0,1);
+
 
 		});
 
@@ -70,8 +76,12 @@
 
 	<script id='vertex_shader' type='x-shader/x-vertex'>#version 300 es
 		in vec3 a_position;
+		out vec3 out_color;
+		uniform vec3 color;
 		uniform float uPointSize;
+
 		void main(void){
+			out_color=color;
 			gl_PointSize=uPointSize;
 			gl_Position=vec4(a_position,1.0);
 		}
@@ -79,11 +89,11 @@
 
 	<script id='fragment_shader' type='x-shader/x-fragment'>#version 300 es
 		precision mediump float;
-
+		in vec3 out_color;
 		out vec4 finalColor;
 
 		void main(void){
-			finalColor=vec4(0.0,0.0,0.0,1.0);
+			finalColor=vec4(out_color,1.0);
 		}
 	</script>
 
